@@ -1,7 +1,8 @@
-import os
-import csv
-import discord
 import asyncio
+import csv
+import os
+
+import discord
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -15,9 +16,15 @@ async def fetch_and_store_messages(channel):
         writer = csv.writer(file)
         writer.writerow(['Author', 'Message'])
 
-        async for message in channel.history(limit=None):  # Fetch all messages without limit
-            # Check if the message is not from the KSF Bot user, not a bot command, and does not contain only data between <>
-            if message.author.name != "KSF Bot" and not message.content.startswith('!') and not ('<' in message.content and '>' in message.content):
+         # Fetch all messages without limit
+        async for message in channel.history(limit=None): 
+            # Check if the message is not from the KSF Bot user, not a bot command,
+            # and does not contain only data between <>
+          if (
+              message.author.name != "KSF Bot" and 
+              not message.content.startswith('!') and 
+              not ('<' in message.content and '>' in message.content)
+          ):
                 # Write author's name and message content to the CSV file
                 writer.writerow([message.author.name, message.content])
 
