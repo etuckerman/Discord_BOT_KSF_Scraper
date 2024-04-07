@@ -1,22 +1,29 @@
 import os
 import csv
 import discord
+import asyncio
 
 intents = discord.Intents.default()
 intents.message_content = True
 
 client = discord.Client(intents=intents)
 
+messages_per_second = 50  # Default value, can be customized
+
 async def fetch_and_store_messages(channel):
     with open('surf_messages.csv', 'w', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
         writer.writerow(['Author', 'Message'])
 
-        async for message in channel.history(limit=None):
+        async for message in channel.history(limit=None):  # Fetch all messages without limit
             # Check if the message is not from the KSF Bot user, not a bot command, and does not contain only data between <>
             if message.author.name != "KSF Bot" and not message.content.startswith('!') and not ('<' in message.content and '>' in message.content):
                 # Write author's name and message content to the CSV file
                 writer.writerow([message.author.name, message.content])
+
+                # Calculate the delay based on the messages per second rate
+                delay = 1 / messages_per_second
+                await asyncio.sleep(delay)
 
 @client.event
 async def on_ready():
