@@ -9,7 +9,7 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
-messages_per_second = 50  # Default value, can be customized
+messages_per_second = 500  # Default value, can be customized
 
 async def fetch_and_store_messages(channel):
     with open('surf_messages.csv', 'w', newline='', encoding='utf-8') as file:
