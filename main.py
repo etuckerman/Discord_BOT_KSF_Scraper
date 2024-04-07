@@ -1,5 +1,5 @@
 import os
-
+import csv
 import discord
 
 intents = discord.Intents.default()
@@ -11,29 +11,29 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    channel = discord.utils.get(client.get_all_channels(), name='surf')
+    await fetch_and_store_messages(channel)
 
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+async def fetch_and_store_messages(channel):
+    # Open a CSV file for writing
+    with open('surf_messages.csv', 'w', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Author', 'Message'])
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+        async for message in channel.history(limit=None):
+            # Write each message to the CSV file
+            writer.writerow([message.author.name, message.content])
 
 
 try:
-  token = os.getenv("TOKEN") or ""
-  if token == "":
-    raise Exception("Please add your token to the Secrets pane.")
-  client.run(token)
+    token = os.getenv("TOKEN") or ""
+    if token == "":
+        raise Exception("Please add your token to the Secrets pane.")
+    client.run(token)
 except discord.HTTPException as e:
     if e.status == 429:
-        print(
-            "The Discord servers denied the connection for making too many requests"
-        )
-        print(
-            "Get help from https://stackoverflow.com/questions/66724687/in-discord-py-how-to-solve-the-error-for-toomanyrequests"
-        )
+        print("The Discord servers denied the connection for making too many requests")
+        print("Get help from https://stackoverflow.com/questions/66724687/in-discord-py-how-to-solve-the-error-for-toomanyrequests")
     else:
         raise e
