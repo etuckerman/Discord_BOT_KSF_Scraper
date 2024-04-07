@@ -13,8 +13,8 @@ async def fetch_and_store_messages(channel):
         writer.writerow(['Author', 'Message'])
 
         async for message in channel.history(limit=None):
-            # Check if the message is not blank and does not contain information between <>
-            if message.content.strip() and not ('<' in message.content and '>' in message.content):
+            # Check if the message is not a bot command and does not contain only data between <>
+            if not message.content.startswith('!') and not ('<' in message.content and '>' in message.content):
                 # Write author's name and message content to the CSV file
                 writer.writerow([message.author.name, message.content])
 
